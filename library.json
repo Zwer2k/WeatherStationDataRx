@@ -1,0 +1,17 @@
+{
+    "name": "WeatherStationDataRx",
+    "keywords": "weather",
+    "description": "",
+    "repository": {
+        "type": "git",
+        "url": ""
+    },
+    "version": "0.0.1",
+    "exclude": "",
+    "examples": "examples/*.ino",
+    "frameworks": "arduino",
+    "platforms": [
+        "atmelavr",
+        "espressif"
+    ]
+}
