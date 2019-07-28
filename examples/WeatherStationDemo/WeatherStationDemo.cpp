@@ -1,5 +1,3 @@
-#include <WeatherStationDataRx.h>
-
 /**************************************************************************************
 
 This is example for read weather data from Venus W174/W132 (tested), Auriol H13726, Hama EWS 1500, Meteoscan W155/W160
@@ -16,22 +14,28 @@ MIT License
 **************************************************************************************/
 
 #include "WeatherStationDataRx.h"
-#include <Arduino.h>
 
 #ifdef ESP8266
-#define DATA_PIN D3
+#define DATA_PIN D5
 #else
 #define DATA_PIN 3
 #endif
 
-WeatherStationDataRx wsdr(DATA_PIN);
+WeatherStationDataRx wsdr(DATA_PIN, true);
+
+void PairedDeviceAdded(byte newID) {
+    Serial.printf("New device paired %d\r\n", newID);
+    wsdr.pair(NULL, PairedDeviceAdded);
+}
 
 void setup()
 {
 	Serial.begin(115200);
+    delay(5000);
 	Serial.println("WeatherStationDataRx Test");
 
 	wsdr.begin();
+    wsdr.pair(NULL, PairedDeviceAdded);
 }
 
 void loop()
@@ -41,7 +45,8 @@ void loop()
         case 'T':
             Serial.print("Temperature: ");
             Serial.print(wsdr.readTemperature());
-            Serial.println("°C");
+            Serial.print("°");
+            Serial.println("C");
             Serial.print("Humidity: ");
             Serial.print(wsdr.readHumidity());
             Serial.println("%");
