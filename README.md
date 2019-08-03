@@ -5,7 +5,7 @@ The transmission protocol of the weather station is described here:
 http://www.tfd.hu/tfdhu/files/wsprotocol/auriol_protocol_v20.pdf
 
 
-![Connecting RXB6](doc/RFB6_connect.svg)
+![Connecting RXB6](doc/RXB6_connect.svg?sanitize=true)
 
 ## License
 
