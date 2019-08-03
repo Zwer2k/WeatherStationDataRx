@@ -1,17 +1,29 @@
 {
     "name": "WeatherStationDataRx",
-    "keywords": "weather",
+    "keywords": "weather station, ",
     "description": "",
+    "homepage": "https://github.com/Zwer2k/WeatherStationDataRx",
     "repository": {
         "type": "git",
-        "url": ""
+        "url": "https://github.com/Zwer2k/WeatherStationDataRx.git"
     },
-    "version": "0.0.1",
+    "version": "0.1.0",
     "exclude": "",
     "examples": "examples/*/*.ino",
     "frameworks": "arduino",
     "platforms": [
         "atmelavr",
         "espressif"
+    ],
+    "authors":
+    [        
+        {
+            "name": "Zwer2k",
+            "maintainer": true
+        },
+        {
+            "name": "slartibartfast",
+            "url": "https://forum.arduino.cc/index.php?topic=462370.0"
+        }
     ]
 }
