@@ -8,7 +8,7 @@
     },
     "version": "0.0.1",
     "exclude": "",
-    "examples": "examples/*.ino",
+    "examples": "examples/*/*.ino",
     "frameworks": "arduino",
     "platforms": [
         "atmelavr",
