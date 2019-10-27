@@ -13,6 +13,8 @@ The communication can be done via receiver module RXB6 or directly by modificati
 ### Communication by modification at the transmitter Venus W132
 ![Connecting RXB6](doc/W132_connect.png)
 
+![Connecting RXB6](doc/W132_board.jpg)
+
 
 ## License
 
