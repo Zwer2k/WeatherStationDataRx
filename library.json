@@ -1,19 +1,17 @@
 {
     "name": "WeatherStationDataRx",
-    "keywords": "weather station, ",
-    "description": "",
+    "keywords": "weather, station",
+    "description": "Arduino library for read weather data from Venus W174/W132 (tested), Auriol H13726, Hama EWS 1500, Meteoscan W155/W160",
     "homepage": "https://github.com/Zwer2k/WeatherStationDataRx",
     "repository": {
         "type": "git",
         "url": "https://github.com/Zwer2k/WeatherStationDataRx.git"
     },
     "version": "0.1.0",
-    "exclude": "",
-    "examples": "examples/*/*.ino",
     "frameworks": "arduino",
     "platforms": [
         "atmelavr",
-        "espressif"
+        "espressif8266"
     ],
     "authors":
     [        
