@@ -4,9 +4,9 @@ Arduino library for read weather data from Venus W174/W132 (tested), Auriol H137
 The transmission protocol of the weather station is described here: 
 http://www.tfd.hu/tfdhu/files/wsprotocol/auriol_protocol_v20.pdf
 
+The communication can be done via receiver module RXB6/MX-RM-5V or directly by modification at the transmitter (e.g. with Venus W132). 
 
-The communication can be done via receiver module RXB6 or directly by modification at the transmitter (e.g. with Venus W132). 
-
+Tested on Arduino Duemilanove, ESP8266 (Tested on Wemos D1 Mini) and ESP32 (ESP-WROOM-32
 ### Communication via the receiver module
 ![Connecting RXB6](doc/RXB6_connect.png)
 
@@ -20,4 +20,4 @@ The communication can be done via receiver module RXB6 or directly by modificati
 
 The MIT License (MIT)
 
-Copyright (c) 2019 Zwer2k
+Copyright (c) 2019 Zwer2k - Fardella Simone
