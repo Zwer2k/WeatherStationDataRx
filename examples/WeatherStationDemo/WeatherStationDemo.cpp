@@ -37,7 +37,7 @@ WeatherStationDataRx wsdr(DATA_PIN, true);
 
 void PairedDeviceAdded(byte newID)
 {
-#ifdef ESP8266 || ESP32
+#if defined(ESP8266) || defined(ESP32)
     Serial.printf("New device paired %d\r\n", newID);
 #else
     Serial.print("New device paired ");

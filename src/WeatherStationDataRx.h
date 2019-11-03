@@ -4,7 +4,7 @@
 #define WeatherStationDataRx_h
 #include <Arduino.h>
 
-#define WSDR_DEBUG
+//#define WSDR_DEBUG
 // Define where debug output will be printed.
 #define DEBUG_PRINTER Serial
 

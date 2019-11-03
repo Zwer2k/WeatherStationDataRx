@@ -10,7 +10,7 @@ volatile bool rxOk = false;           // Variable zum anzeigen, das die Daten im
 // Helper for ISR call
 WeatherStationDataRx *WeatherStationDataRx::__instance[4] = {0};
 
-#ifdef ESP8266 || ESP32
+#if defined(ESP8266) || defined(ESP32)
 ICACHE_RAM_ATTR void WeatherStationDataRx::_ISR()
 #else
 void WeatherStationDataRx::_ISR()
