@@ -70,12 +70,16 @@ void loop()
         Serial.print("Humidity: ");
         Serial.print(wsdr.readHumidity());
         Serial.println("%");
+        Serial.print("Battery: ");
+        Serial.println(bitRead(wsdr.batteryStatus(), 0) == 0 ? "OK" : "Low");
         break;
 
     case 'S':
         Serial.print("Wind speed: ");
         Serial.print(wsdr.readWindSpeed());
         Serial.println("m/s");
+        Serial.print("Battery: ");
+        Serial.println(bitRead(wsdr.batteryStatus(), 0) == 0 ? "OK" : "Low");
         break;
 
     case 'G':
@@ -85,12 +89,16 @@ void loop()
         Serial.print("Wind gust: ");
         Serial.print(wsdr.readWindGust());
         Serial.println("m/s");
+        Serial.print("Battery: ");
+        Serial.println(bitRead(wsdr.batteryStatus(), 0) == 0 ? "OK" : "Low");
         break;
 
     case 'R':
         Serial.print("Rain volume: ");
         Serial.print(wsdr.readRainVolume());
         Serial.println("mm");
+        Serial.print("Battery: ");
+        Serial.println(bitRead(wsdr.batteryStatus(), 1) == 0 ? "OK" : "Low");
         break;
 
     default:

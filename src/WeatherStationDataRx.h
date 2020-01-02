@@ -52,6 +52,7 @@ public:
     float readWindGust(bool inKMH = false);
     float readRainVolume();
     bool readButtonState();
+    byte batteryStatus(); // 0 - OK, 1 - wind sensor, 2 - rain sensor, 3 - both
 
     float convertCtoF(float);
     float convertFtoC(float);
