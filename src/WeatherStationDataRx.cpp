@@ -359,3 +359,7 @@ bool WeatherStationDataRx::pairingDevice(byte randomID, byte xBits, byte subID)
 
     return true;
 }
+
+byte WeatherStationDataRx::batteryStatus() {
+  return batteryState;
+}
