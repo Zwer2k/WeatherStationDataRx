@@ -72,6 +72,8 @@ void loop()
         Serial.println("%");
         Serial.print("Battery: ");
         Serial.println(bitRead(wsdr.batteryStatus(), 0) == 0 ? "OK" : "Low");
+        Serial.print("Sensor ID: ");
+        Serial.println(wsdr.sensorID());
         break;
 
     case 'S':
@@ -80,6 +82,8 @@ void loop()
         Serial.println("m/s");
         Serial.print("Battery: ");
         Serial.println(bitRead(wsdr.batteryStatus(), 0) == 0 ? "OK" : "Low");
+        Serial.print("Sensor ID: ");
+        Serial.println(wsdr.sensorID());
         break;
 
     case 'G':
@@ -91,6 +95,8 @@ void loop()
         Serial.println("m/s");
         Serial.print("Battery: ");
         Serial.println(bitRead(wsdr.batteryStatus(), 0) == 0 ? "OK" : "Low");
+        Serial.print("Sensor ID: ");
+        Serial.println(wsdr.sensorID());
         break;
 
     case 'R':
@@ -99,6 +105,8 @@ void loop()
         Serial.println("mm");
         Serial.print("Battery: ");
         Serial.println(bitRead(wsdr.batteryStatus(), 1) == 0 ? "OK" : "Low");
+        Serial.print("Sensor ID: ");
+        Serial.println(wsdr.sensorID());
         break;
 
     default:
