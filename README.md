@@ -20,4 +20,4 @@ Tested on Arduino Duemilanove, ESP8266 (Tested on Wemos D1 Mini) and ESP32 (ESP-
 
 The MIT License (MIT)
 
-Copyright (c) 2019 Zwer2k - Fardella Simone
+Copyright (c) 2020 Zwer2k - Fardella Simone - Martin Korbel
