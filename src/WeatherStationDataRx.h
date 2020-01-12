@@ -53,6 +53,7 @@ public:
     float readRainVolume();
     bool readButtonState();
     byte batteryStatus(); // 0 - OK, 1 - wind sensor, 2 - rain sensor, 3 - both
+    byte sensorID();
 
     float convertCtoF(float);
     float convertFtoC(float);
@@ -71,6 +72,7 @@ private:
     bool buttonState;
     uint16_t temperature, humidity, windSpeed, windDirection, windGust, rainVolume; // Variablen zum speichern der Daten
     byte batteryState = 0;                                                          // der Batterie-Status von beiden Sensoren (Bit 0 = Windsensor und Bit 1 = Regensensor)
+    byte randomID = 0;                                                              // At power up (when the batteries are inserted) the sensor selects a random number.
 
     bool calculateChecksume(byte startValue, bool add);
     bool isPaired(byte randomID);

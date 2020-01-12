@@ -141,7 +141,7 @@ char WeatherStationDataRx::readData()
 
     if (rxOk)
     {                                                       // wenn die Interrupt-Routine rxOk auf true gesetzt hat, dann ist der Puffer mit den Daten gefuellt
-        byte randomID = (unsigned long)rxBuffer & 0xff;     // die ersten 8 Bits enthalten eine Zufalls-ID (wird beim Batteriewechsel neu generiert)
+        randomID = (unsigned long)rxBuffer & 0xff;     // die ersten 8 Bits enthalten eine Zufalls-ID (wird beim Batteriewechsel neu generiert)
         bool bState = (unsigned long)(rxBuffer >> 8) & 0x1; // wenn Bit 8 gesetzt ist, sind die Batterien schwach
         byte xBits = (unsigned long)(rxBuffer >> 9) & 0x3;  // die Bits 9 und 10 sind bei Wind- und Regensensor immer 1 (Wert von xBits = 3)
         buttonState = (unsigned long)rxBuffer >> 11 & 0x1;  // wenn Bit 11 gesetzt ist, wurde die Taste am Sensor betaetigt
@@ -362,4 +362,8 @@ bool WeatherStationDataRx::pairingDevice(byte randomID, byte xBits, byte subID)
 
 byte WeatherStationDataRx::batteryStatus() {
   return batteryState;
+}
+
+byte WeatherStationDataRx::sensorID() {
+  return randomID;
 }
