@@ -175,8 +175,8 @@ char WeatherStationDataRx::readData()
                     {
                         bState ? batteryState |= 1 : batteryState &= 0; // wenn die Batterien schwach sind, Bit 0 von batteryState auf 1 setzen
 
-                        temperature = ((unsigned long)(rxBuffer >> 12) & 0xfff);                              // die Bits 12-23 enthalten den Temperaturwert (in 0.1 °C)
-                        humidity = ((unsigned long)((rxBuffer >> 24) & 0xf) * 10) + ((rxBuffer >> 28) & 0xf); // die Bits 24-27 (einzer) und 28-31 (zehner) enthalten den Luftfeuchtigkeitsert (in %)
+                        temperature = (long)(-2048 * ((rxBuffer >> 23) & 0x1)) + (unsigned long)((rxBuffer >> 12) & 0x7ff); // die Bits 12-23 enthalten den Temperaturwert (in 0.1 °C)
+                        humidity = (unsigned long)((rxBuffer >> 24) & 0xf)  + ((rxBuffer >> 28) & 0xf) * 10; // die Bits 24-27 (einzer) und 28-31 (zehner) enthalten den Luftfeuchtigkeitsert (in %)
 
                         DEBUG_PRINTF("Temperatur: %d.%d", (int)(temperature / 10), (int)(temperature % 10));
                         DEBUG_PRINT("°C")
