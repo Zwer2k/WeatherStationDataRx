@@ -107,7 +107,7 @@ void WeatherStationDataRx::pair(byte pairedDevices[], void (*pairedDeviceAdded)(
     if (pairedDevices == NULL)
     {
         DEBUG_PRINTLN("Start pairing for 1 min.");
-        pairingEndMillis = millis() + 60 * 1000;
+        pairingEndMillis = millis() + 60 * 1000L;
     }
     else
     {

@@ -1,0 +1,35 @@
+#######################################
+# Syntax Coloring Map For WeatherStationDataRx
+#######################################
+
+#######################################
+# Datatypes (KEYWORD1)
+#######################################
+
+WeatherStationDataRx	KEYWORD1
+
+#######################################
+# Methods and Functions (KEYWORD2)
+#######################################
+
+begin	KEYWORD2
+pair	KEYWORD2
+readData	KEYWORD2
+
+readTemperature	KEYWORD2
+readHumidity	KEYWORD2
+readWindSpeed	KEYWORD2
+readWindDirection	KEYWORD2
+readWindGust	KEYWORD2
+readRainVolume	KEYWORD2
+readButtonState	KEYWORD2
+
+batteryStatus	KEYWORD2
+sensorID	KEYWORD2
+
+convertCtoF	KEYWORD2
+convertFtoC	KEYWORD2
+
+#######################################
+# Constants (LITERAL1)
+#######################################
