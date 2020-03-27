@@ -41,6 +41,7 @@ public:
     ~WeatherStationDataRx();
 
     void begin();
+    void end();
     void pair(byte pairedDevices[] = NULL, void (*pairedDeviceAdded)(byte newID) = NULL);
 
     char readData();

@@ -100,6 +100,12 @@ void WeatherStationDataRx::begin()
     DEBUG_PRINTLN("WeatherStationDataRx begin");
 }
 
+void WeatherStationDataRx::end()
+{
+    DEBUG_PRINTLN("WeatherStationDataRx end");
+    detachInterrupt(digitalPinToInterrupt(dataPin));    
+}
+
 void WeatherStationDataRx::pair(byte pairedDevices[], void (*pairedDeviceAdded)(byte newID))
 {
     this->pairedDeviceAdded = pairedDeviceAdded;
