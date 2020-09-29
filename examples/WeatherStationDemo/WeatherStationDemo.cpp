@@ -33,7 +33,7 @@
 #define DATA_PIN 2
 #endif
 
-WeatherStationDataRx wsdr(DATA_PIN, true);
+WeatherStationDataRx wsdr(DATA_PIN, true, false, false);
 
 void PairedDeviceAdded(byte newID)
 {
@@ -44,7 +44,7 @@ void PairedDeviceAdded(byte newID)
     Serial.println(newID, DEC);
 #endif
 
-    wsdr.pair(NULL, PairedDeviceAdded);
+    wsdr.pair(PairedDeviceAdded);
 }
 
 void setup()
@@ -54,7 +54,7 @@ void setup()
     Serial.println("WeatherStationDataRx Test");
 
     wsdr.begin();
-    wsdr.pair(NULL, PairedDeviceAdded);
+    wsdr.pair(PairedDeviceAdded);
 }
 
 void loop()
