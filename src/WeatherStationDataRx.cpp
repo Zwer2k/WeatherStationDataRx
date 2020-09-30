@@ -3,8 +3,8 @@
 #include "Ringbuffer.h"
 
 byte dataPin;
-unsigned long long rxBuffer;                       // Variable zum speichern des Datentelegramms (32 Bit)
-Ringbuffer<unsigned long long, 10> dataBuffer;     // Ringbuffer für zuletzt empfangene Daten (10 x 32Bit)
+uint64_t rxBuffer;                       // Variable zum speichern des Datentelegramms (32 Bit)
+Ringbuffer<uint64_t, 10> dataBuffer;     // Ringbuffer für zuletzt empfangene Daten (10 x 32Bit)
 
 // Helper for ISR call
 WeatherStationDataRx *WeatherStationDataRx::__instance[4] = {0};
@@ -150,15 +150,16 @@ byte WeatherStationDataRx::readData(bool newFormat)
 
     if (dataBuffer.currentSize() > 0)
     {   
-        unsigned long long newData;
+        unsigned long long rxData;
         noInterrupts();
-        dataBuffer.pull(newData);
-        interrupts();                     
+        dataBuffer.pull(rxData);
+        interrupts();
+
                                        // wenn die Interrupt-Routine rxOk auf true gesetzt hat, dann ist der Puffer mit den Daten gefuellt
-        randomID = (unsigned long)newData & 0xff;     // die ersten 8 Bits enthalten eine Zufalls-ID (wird beim Batteriewechsel neu generiert)
-        bool bState = (unsigned long)(newData >> 8) & 0x1; // wenn Bit 8 gesetzt ist, sind die Batterien schwach
-        byte xBits = (unsigned long)(newData >> 9) & 0x3;  // die Bits 9 und 10 sind bei Wind- und Regensensor immer 1 (Wert von xBits = 3)
-        buttonState = (unsigned long)newData >> 11 & 0x1;  // wenn Bit 11 gesetzt ist, wurde die Taste am Sensor betaetigt
+        randomID = (unsigned long)rxData & 0xff;     // die ersten 8 Bits enthalten eine Zufalls-ID (wird beim Batteriewechsel neu generiert)
+        bool bState = (unsigned long)(rxData >> 8) & 0x1; // wenn Bit 8 gesetzt ist, sind die Batterien schwach
+        byte xBits = (unsigned long)(rxData >> 9) & 0x3;  // die Bits 9 und 10 sind bei Wind- und Regensensor immer 1 (Wert von xBits = 3)
+        buttonState = (unsigned long)rxData >> 11 & 0x1;  // wenn Bit 11 gesetzt ist, wurde die Taste am Sensor betaetigt
         /*
      *  Hinweis!
      *  Weil sich die Zufalls-ID bei jedem Batteriewechsel aendert, werden nur die xBits (sind immer gesetzt),
@@ -178,7 +179,7 @@ byte WeatherStationDataRx::readData(bool newFormat)
 
             if (xBits < 3)
             { // xBits < 3 ist Temperatur oder Luftfeuchtigkeit
-                if (calculateChecksume(0xf, false))
+                if (calculateChecksume(rxData, 0xf, false))
                 {
                     if (pairingEndMillis != 0)
                     {
@@ -189,8 +190,8 @@ byte WeatherStationDataRx::readData(bool newFormat)
                     {
                         bState ? batteryState |= 1 : batteryState &= 0; // wenn die Batterien schwach sind, Bit 0 von batteryState auf 1 setzen
 
-                        temperature = (long)(-2048 * ((newData >> 23) & 0x1)) + (unsigned long)((newData >> 12) & 0x7ff); // die Bits 12-23 enthalten den Temperaturwert (in 0.1 °C)
-                        humidity = (unsigned long)((newData >> 24) & 0xf)  + ((newData >> 28) & 0xf) * 10; // die Bits 24-27 (einzer) und 28-31 (zehner) enthalten den Luftfeuchtigkeitsert (in %)
+                        temperature = (long)(-2048 * ((rxData >> 23) & 0x1)) + (unsigned long)((rxData >> 12) & 0x7ff); // die Bits 12-23 enthalten den Temperaturwert (in 0.1 °C)
+                        humidity = (unsigned long)((rxData >> 24) & 0xf)  + ((rxData >> 28) & 0xf) * 10; // die Bits 24-27 (einzer) und 28-31 (zehner) enthalten den Luftfeuchtigkeitsert (in %)
 
                         DEBUG_PRINTF("Temperatur: %d.%d", (int)(temperature / 10), (int)(temperature % 10));
                         DEBUG_PRINT("°C")
@@ -208,7 +209,7 @@ byte WeatherStationDataRx::readData(bool newFormat)
             }
             else if (xBits == 3)
             {                                                       // xBits = 3 ist Wind- oder Regensensor
-                byte subID = (unsigned long)(rxBuffer >> 12) & 0x7; // die Bits 12, 13, 14 enthalten eine Sub-ID (Windmesser sendet 2 Telegramme Sub-ID 1 und 7)
+                byte subID = (unsigned long)(rxData >> 12) & 0x7;  // die Bits 12, 13, 14 enthalten eine Sub-ID (Windmesser sendet 2 Telegramme Sub-ID 1 und 7)
                 DEBUG_PRINT(F("SubID: "));
                 DEBUG_PRINTLN(subID);
 
@@ -221,12 +222,12 @@ byte WeatherStationDataRx::readData(bool newFormat)
                 {
                     if ((subID == 1) || (subID == 7))
                     {
-                        if (calculateChecksume(0xf, false))
+                        if (calculateChecksume(rxData, 0xf, false))
                         {
                             if (subID == 1)
                             {                                                             // subID = 1 ist der Windsensor (Durchschnitts-Windgeschwindigkeit)
                                 bState ? batteryState |= 1 : batteryState &= 0;           // wenn die Batterien schwach sind, Bit 0 von batteryState auf 1 setzen
-                                windSpeed = ((unsigned long)(newData >> 24) & 0xff) * 2; // die Bits 24-31 enthalten die durchschnittliche Windgeschwindigkeit in
+                                windSpeed = ((unsigned long)(rxData >> 24) & 0xff) * 2; // die Bits 24-31 enthalten die durchschnittliche Windgeschwindigkeit in
                                                                                           // Einheiten zu 0.2 m/s und mal 10 ergibt: "* 2" fuer einen Integerwert
                                 DEBUG_PRINTF("Windgeschwindigkeit (/): %d.%dm/s\r\n", (int)(windSpeed / 10), (int)(windSpeed % 10));
 
@@ -236,11 +237,11 @@ byte WeatherStationDataRx::readData(bool newFormat)
                             if (subID == 7)
                             {                                                            // subID = 7 ist der Windsensor (Windrichtung und Windboen)
                                 bState ? batteryState |= 1 : batteryState &= 0;          // wenn die Batterien schwach sind, Bit 0 von batteryState auf 1 setzen
-                                uint16_t wdir = (unsigned long)(rxBuffer >> 15) & 0x1ff; // die Bits 15-23 enthalten die Windrichtung in Grad (0-360)
+                                uint16_t wdir = (unsigned long)(rxData >> 15) & 0x1ff; // die Bits 15-23 enthalten die Windrichtung in Grad (0-360)
                                 if (wdir <= 360)
                                     windDirection = wdir;                                // die Windrichtung wird manchmal falsch uebertragen, deshalb nur Daten bis 360 Grad uebernehmen
-                                windGust = ((unsigned long)(newData >> 24) & 0xff) * 2; // die Bits 24-31 enthalten die Windboen in
-                                //uint16_t wg = ((unsigned long) (rxBuffer >> 24) & 0xff) * 2; // die Bits 24-31 enthalten die Windboen in
+                                windGust = ((unsigned long)(rxData >> 24) & 0xff) * 2; // die Bits 24-31 enthalten die Windboen in
+                                //uint16_t wg = ((unsigned long) (rxData >> 24) & 0xff) * 2; // die Bits 24-31 enthalten die Windboen in
                                 // Einheiten zu 0.2 m/s und mal 10 ergibt: "* 2" fuer einen Integerwert
                                 //if (wg < 500) windGust = wg;  // die Windboen werden manchmal falsch uebertragen, deshalb nur Daten unter 50m/s (180km/h) uebernehmen
                                 DEBUG_PRINTF("Windrichtung: %3d", windDirection);
@@ -259,10 +260,10 @@ byte WeatherStationDataRx::readData(bool newFormat)
                     }
                     else if (subID == 3)
                     { // subID = 3 ist der Regensensor (absolute Regenmenge seit Batteriewechsel)
-                        if (calculateChecksume(0x7, true))
+                        if (calculateChecksume(rxData, 0x7, true))
                         {
                             bState ? batteryState |= 2 : batteryState &= 0;               // wenn die Batterien schwach sind, Bit 1 von batteryState auf 1 setzen
-                            rainVolume = ((unsigned long)(newData >> 16) & 0xffff) * 25; // die Bits 16-31 enthalten die Niederschlagsmenge
+                            rainVolume = ((unsigned long)(rxData >> 16) & 0xffff) * 25; // die Bits 16-31 enthalten die Niederschlagsmenge
                                                                                           // in Einheiten zu je 0.25 mm -> 1 mm = 1 L/m2
                                                                                           // hier zusaetzlich mal 10 um einen Integerwert zu erhalten
                             DEBUG_PRINTF("Regenmenge: %d.%dmm\r\n", (int)(rainVolume / 100), (int)(rainVolume % 100));
@@ -362,25 +363,25 @@ float WeatherStationDataRx::convertFtoC(float f)
     return (f - 32) * 0.55555;
 }
 
-bool WeatherStationDataRx::calculateChecksume(byte startValue, bool add)
+bool WeatherStationDataRx::calculateChecksume(unsigned long long data, byte startValue, bool add)
 {
     unsigned long checksumCalc = startValue;
     for (byte n = 0; n < 32; n += 4)
     {
-        DEBUG_PRINT((unsigned long)((rxBuffer >> n) & 0xf));
+        DEBUG_PRINT((unsigned long)((data >> n) & 0xf));
         DEBUG_PRINT(" ");
 
         if (add)
         {
-            checksumCalc += ((rxBuffer >> n) & 0xf);
+            checksumCalc += ((data >> n) & 0xf);
         }
         else
         {
-            checksumCalc -= ((rxBuffer >> n) & 0xf);
+            checksumCalc -= ((data >> n) & 0xf);
         }
     }
     checksumCalc &= 0xf;
-    unsigned long checksum = (rxBuffer >> 32) & 0xf;
+    unsigned long checksum = (data >> 32) & 0xf;
     DEBUG_PRINTF("Checksum calc=%lu read=%lu\r\n", checksumCalc, checksum);
 
     return checksumCalc == checksum;

@@ -103,7 +103,7 @@ private:
     bool keepNewDataState;
     unsigned long lastDataTime;
 
-    bool calculateChecksume(byte startValue, bool add);
+    bool calculateChecksume(unsigned long long data, byte startValue, bool add);
     bool isPaired(byte randomID);
     bool pairingDevice(byte randomID, byte xBits, byte subID = 0);
 
