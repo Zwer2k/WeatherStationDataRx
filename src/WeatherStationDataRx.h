@@ -94,14 +94,13 @@ private:
 #endif
     bool buttonState;
     byte newData = 0;
-    byte oldData = 0;
     int16_t temperature;
     uint16_t humidity, windSpeed, windDirection, windGust, rainVolume; // Variablen zum speichern der Daten
     byte batteryState = 0;                                                          // der Batterie-Status von beiden Sensoren (Bit 0 = Windsensor und Bit 1 = Regensensor)
     byte randomID = 0;                                                              // At power up (when the batteries are inserted) the sensor selects a random number.
     bool ignoreRepeatedMessages;
     bool keepNewDataState;
-    unsigned long lastDataTime;
+    unsigned long lastDataTime = 0;
 
     bool calculateChecksume(unsigned long long data, byte startValue, bool add);
     bool isPaired(byte randomID);

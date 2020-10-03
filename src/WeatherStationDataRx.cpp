@@ -4,7 +4,7 @@
 
 byte dataPin;
 uint64_t rxBuffer;                       // Variable zum speichern des Datentelegramms (32 Bit)
-Ringbuffer<uint64_t, 10> dataBuffer;     // Ringbuffer für zuletzt empfangene Daten (10 x 32Bit)
+Ringbuffer<uint64_t, 20> dataBuffer;     // Ringbuffer für zuletzt empfangene Daten (10 x 32Bit)
 
 // Helper for ISR call
 WeatherStationDataRx *WeatherStationDataRx::__instance[4] = {0};
@@ -22,8 +22,14 @@ void WeatherStationDataRx::_ISR()
         }
 }
 
+#if defined(ESP8266) || defined(ESP32)
+ICACHE_RAM_ATTR void WeatherStationDataRx::rx433Handler()
+#else
 void WeatherStationDataRx::rx433Handler()
+#endif
 { // Interrupt-Routine
+    lastDataTime = millis();
+
     static unsigned long rxHigh = 0, rxLow = 0;
     static bool syncBit = 0, dataBit = 0;
     static byte rxCounter = 0;
@@ -56,7 +62,8 @@ void WeatherStationDataRx::rx433Handler()
             {                  // wenn das Datentelegramm (32 Bit) vollstaendig uebertragen wurde, dann...
                 rxCounter = 0; // den Counter zuruecksetzen
                 syncBit = 0;   // syncBit zuruecksetzen
-                dataBuffer.push(&rxBuffer);   // Empfangene Daten aus (rxBuffer) fuer die Auswertung in Ringbuffer speichern
+                if ((!this->ignoreRepeatedMessages) || (!dataBuffer.contains(&rxBuffer)))
+                    dataBuffer.push(&rxBuffer);   // Empfangene Daten aus (rxBuffer) fuer die Auswertung in Ringbuffer speichern
             }
         }
     }
@@ -91,8 +98,6 @@ void WeatherStationDataRx::begin()
 {
     // set up the pins!
     DEBUG_PRINTF("Data pin %d\r\n", dataPin);
-    Serial.print("Data pin ");
-    Serial.println(dataPin);
     pinMode(dataPin, INPUT);
     attachInterrupt(digitalPinToInterrupt(dataPin), _ISR, CHANGE);
 
@@ -127,6 +132,9 @@ void WeatherStationDataRx::pair(byte pairedDevices[], byte pairedDevicesCount, v
 
 byte WeatherStationDataRx::readData(bool newFormat)
 {
+    if ((this->ignoreRepeatedMessages) && (millis() - lastDataTime < IGNORE_REPEATED_MESSAGES_TIME))
+        return 0;
+    
     if ((pairingEndMillis != 0) && (millis() > pairingEndMillis))
     {
         pairingEndMillis = 0;
@@ -279,14 +287,6 @@ byte WeatherStationDataRx::readData(bool newFormat)
                 }
             }
         }
-    }
-
-    if (this->ignoreRepeatedMessages) {
-        if ((newData == oldData) && (millis() - lastDataTime < IGNORE_REPEATED_MESSAGES_TIME)) {
-            return 0;
-        }
-        oldData = newData;
-        lastDataTime = millis();
     }
 
     if (newFormat) {
