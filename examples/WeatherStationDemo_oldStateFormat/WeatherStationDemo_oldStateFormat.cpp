@@ -45,10 +45,6 @@ void PairedDeviceAdded(byte newID)
 #endif
 
     wsdr.pair(PairedDeviceAdded);
-
-    // If you already have a sensor ID for your device, you can set it as follows.
-    // byte myDeviceIDs[] = {34, 63};
-    // wsdr.pair(myDeviceIDs, sizeof(myDeviceIDs));
 }
 
 void setup()
@@ -63,48 +59,57 @@ void setup()
 
 void loop()
 {
-    byte newDataState = wsdr.readData(true);
-    if (newDataState > 0) {
-        Serial.print("Sensor ID: ");
-        Serial.println(wsdr.sensorID());
-    }
-
-    if (wsdr.dataHas(newDataState, NDTemperature)) {
-        Serial.print("Battery: ");
-        Serial.println(bitRead(wsdr.batteryStatus(), 0) == 0 ? "OK" : "Low");
-    }
-
-    if (wsdr.dataHas(newDataState, NDTemperature)) {
+    char newDataState = wsdr.readData();
+    switch (newDataState)
+    {
+    case 'T':
         Serial.print("Temperature: ");
         Serial.print(wsdr.readTemperature());
         Serial.print("°");
         Serial.println("C");
-    }
-     
-    if (wsdr.dataHas(newDataState, NDHumidity)) {
         Serial.print("Humidity: ");
         Serial.print(wsdr.readHumidity());
         Serial.println("%");
-    }
+        Serial.print("Battery: ");
+        Serial.println(bitRead(wsdr.batteryStatus(), 0) == 0 ? "OK" : "Low");
+        Serial.print("Sensor ID: ");
+        Serial.println(wsdr.sensorID());
+        break;
 
-    if (wsdr.dataHas(newDataState, NDWindSpeed)) {
+    case 'S':
         Serial.print("Wind speed: ");
         Serial.print(wsdr.readWindSpeed());
         Serial.println("m/s");
-    }
-    
-    if (wsdr.dataHas(newDataState, NDWindDirection)) {
+        Serial.print("Battery: ");
+        Serial.println(bitRead(wsdr.batteryStatus(), 0) == 0 ? "OK" : "Low");
+        Serial.print("Sensor ID: ");
+        Serial.println(wsdr.sensorID());
+        break;
+
+    case 'G':
         Serial.print("Wind direction: ");
         Serial.print(wsdr.readWindDirection());
-    }
-    
-    if (wsdr.dataHas(newDataState, NDWindGust)) {
         Serial.println("°");
         Serial.print("Wind gust: ");
-    }
- 
-    if (wsdr.dataHas(newDataState, NDRainVolume)) {
+        Serial.print(wsdr.readWindGust());
+        Serial.println("m/s");
+        Serial.print("Battery: ");
+        Serial.println(bitRead(wsdr.batteryStatus(), 0) == 0 ? "OK" : "Low");
+        Serial.print("Sensor ID: ");
+        Serial.println(wsdr.sensorID());
+        break;
+
+    case 'R':
         Serial.print("Rain volume: ");
         Serial.print(wsdr.readRainVolume());
+        Serial.println("mm");
+        Serial.print("Battery: ");
+        Serial.println(bitRead(wsdr.batteryStatus(), 1) == 0 ? "OK" : "Low");
+        Serial.print("Sensor ID: ");
+        Serial.println(wsdr.sensorID());
+        break;
+
+    default:
+        break;
     }
 }

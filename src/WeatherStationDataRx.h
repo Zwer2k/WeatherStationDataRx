@@ -59,12 +59,15 @@ public:
     void pair(void (*pairedDeviceAdded)(byte newID) = NULL);
     void pair(byte pairedDevices[], byte pairedDevicesCount, void (*pairedDeviceAdded)(byte newID) = NULL);
 
-    byte readData(bool newFormat = false);                      // read data from buffer and retun the state
-                                                                // old state format has an char 
+    byte readData(bool newFormat = false);                      // read data from buffer and retun the state                                                                
+                                                                // in the new format one bit defines a measurement result
+                                                                //  you can check if a measurement result is available with the function dataHas()
+                                                                // old state format has an char () 
                                                                 //  T = temperature+ humidity, 
                                                                 //  S = wind speed,
                                                                 //  G = wind direction and wind gust
                                                                 //  R = rain volume 
+                                                                 
     bool dataHas(byte newDataState, NewDataType check);
 
     float readTemperature(bool inF = false);
