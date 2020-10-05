@@ -3,7 +3,7 @@
   This is example for read weather data from Venus W174/W132 (tested), Auriol H13726, Hama EWS 1500, Meteoscan W155/W160
 
   Initial Date: 21-July-2019
-  Latest Rev: 1-Nov-2019
+  Latest Rev: 5-Oct-2020
 
   Hardware connections for Arduino:
   VDD to 3.3V DC (RXB6) or 5V DC (MX-RM-5V)
