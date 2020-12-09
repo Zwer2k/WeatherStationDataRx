@@ -125,8 +125,9 @@ void WeatherStationDataRx::pair(byte pairedDevices[], byte pairedDevicesCount, v
     }
     else
     {
-        this->pairedDevices = (byte *)realloc(pairedDevices, pairedDevicesCount * sizeof(byte));
+        this->pairedDevices = (byte *)realloc(this->pairedDevices, pairedDevicesCount * sizeof(byte));
         memcpy(this->pairedDevices, pairedDevices, pairedDevicesCount);
+        this->pairedDevicesCount = pairedDevicesCount;
     }
 }
 
