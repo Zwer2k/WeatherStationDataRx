@@ -9,7 +9,9 @@ Ringbuffer<uint64_t, 20> dataBuffer;     // Ringbuffer für zuletzt empfangene D
 // Helper for ISR call
 WeatherStationDataRx *WeatherStationDataRx::__instance[4] = {0};
 
-#if defined(ESP8266) || defined(ESP32)
+#if defined(ESP32)
+IRAM_ATTR void WeatherStationDataRx::_ISR()
+#elif defined(ESP8266)
 ICACHE_RAM_ATTR void WeatherStationDataRx::_ISR()
 #else
 void WeatherStationDataRx::_ISR()
@@ -22,7 +24,9 @@ void WeatherStationDataRx::_ISR()
         }
 }
 
-#if defined(ESP8266) || defined(ESP32)
+#if defined(ESP32)
+IRAM_ATTR void WeatherStationDataRx::rx433Handler()
+#elif defined(ESP8266)
 ICACHE_RAM_ATTR void WeatherStationDataRx::rx433Handler()
 #else
 void WeatherStationDataRx::rx433Handler()
