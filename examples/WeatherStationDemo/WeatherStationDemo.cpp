@@ -1,6 +1,6 @@
 /**************************************************************************************
 
-  This is example for read weather data from Venus W174/W132 (tested), Auriol H13726, Hama EWS 1500, Meteoscan W155/W160
+  This is example for read weather data from Ventus W174/W132 (tested), Auriol H13726, Hama EWS 1500, Meteoscan W155/W160
 
   Initial Date: 21-July-2019
   Latest Rev: 5-Oct-2020
@@ -96,15 +96,18 @@ void loop()
     if (wsdr.dataHas(newDataState, NDWindDirection)) {
         Serial.print("Wind direction: ");
         Serial.print(wsdr.readWindDirection());
+        Serial.println("°");
     }
     
     if (wsdr.dataHas(newDataState, NDWindGust)) {
-        Serial.println("°");
         Serial.print("Wind gust: ");
+        Serial.print(wsdr.readWindGust());
+        Serial.println("m/s");
     }
  
     if (wsdr.dataHas(newDataState, NDRainVolume)) {
         Serial.print("Rain volume: ");
         Serial.print(wsdr.readRainVolume());
+        Serial.println("mm");
     }
 }
