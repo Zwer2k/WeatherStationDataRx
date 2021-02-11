@@ -9,7 +9,7 @@
 #define DEBUG_PRINTER Serial
 
 // Time within which similar messages are ignored
-#define IGNORE_REPEATED_MESSAGES_TIME 1000
+#define IGNORE_REPEATED_MESSAGES_TIME 3000
 
 // Setup debug printing macros.
 #ifdef WSDR_DEBUG

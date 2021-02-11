@@ -3,8 +3,8 @@
 #include "Ringbuffer.h"
 
 byte dataPin;
-uint64_t rxBuffer;                       // Variable zum speichern des Datentelegramms (32 Bit)
-Ringbuffer<uint64_t, 20> dataBuffer;     // Ringbuffer für zuletzt empfangene Daten (10 x 32Bit)
+uint64_t rxBuffer;                       // Variable zum speichern des Datentelegramms (64 Bit)
+Ringbuffer<uint64_t, 20> dataBuffer;     // Ringbuffer für zuletzt empfangene Daten (20 x 64Bit)
 
 // Helper for ISR call
 WeatherStationDataRx *WeatherStationDataRx::__instance[4] = {0};

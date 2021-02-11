@@ -33,7 +33,7 @@
 #define DATA_PIN 2
 #endif
 
-WeatherStationDataRx wsdr(DATA_PIN, true, false, false);
+WeatherStationDataRx wsdr(DATA_PIN, true, true, false);
 
 void PairedDeviceAdded(byte newID)
 {
@@ -65,49 +65,50 @@ void loop()
 {
     byte newDataState = wsdr.readData(true);
     if (newDataState > 0) {
-        Serial.print("Sensor ID: ");
         Serial.println(wsdr.sensorID());
-    }
-
-    if (wsdr.dataHas(newDataState, NDTemperature)) {
-        Serial.print("Battery: ");
-        Serial.println(bitRead(wsdr.batteryStatus(), 0) == 0 ? "OK" : "Low");
-    }
-
-    if (wsdr.dataHas(newDataState, NDTemperature)) {
-        Serial.print("Temperature: ");
-        Serial.print(wsdr.readTemperature());
-        Serial.print("°");
-        Serial.println("C");
-    }
-     
-    if (wsdr.dataHas(newDataState, NDHumidity)) {
-        Serial.print("Humidity: ");
-        Serial.print(wsdr.readHumidity());
-        Serial.println("%");
-    }
-
-    if (wsdr.dataHas(newDataState, NDWindSpeed)) {
-        Serial.print("Wind speed: ");
-        Serial.print(wsdr.readWindSpeed());
-        Serial.println("m/s");
-    }
     
-    if (wsdr.dataHas(newDataState, NDWindDirection)) {
-        Serial.print("Wind direction: ");
-        Serial.print(wsdr.readWindDirection());
-        Serial.println("°");
-    }
+
+        if (wsdr.dataHas(newDataState, NDTemperature)) {
+            Serial.print("Battery: ");
+            Serial.println(bitRead(wsdr.batteryStatus(), 0) == 0 ? "OK" : "Low");
+        }
+
+        if (wsdr.dataHas(newDataState, NDTemperature)) {
+            Serial.print("Temperature: ");
+            Serial.print(wsdr.readTemperature());
+            Serial.println("*C");
+        }
+        
+        if (wsdr.dataHas(newDataState, NDHumidity)) {
+            Serial.print("Humidity: ");
+            Serial.print(wsdr.readHumidity());
+            Serial.println("%");
+        }
+
+        if (wsdr.dataHas(newDataState, NDWindSpeed)) {
+            Serial.print("Wind speed: ");
+            Serial.print(wsdr.readWindSpeed());
+            Serial.println("m/s");
+        }
+        
+        if (wsdr.dataHas(newDataState, NDWindDirection)) {
+            Serial.print("Wind direction: ");
+            Serial.print(wsdr.readWindDirection());
+            Serial.println("°");
+        }
+        
+        if (wsdr.dataHas(newDataState, NDWindGust)) {
+            Serial.print("Wind gust: ");
+            Serial.print(wsdr.readWindGust());
+            Serial.println("m/s");
+        }
     
-    if (wsdr.dataHas(newDataState, NDWindGust)) {
-        Serial.print("Wind gust: ");
-        Serial.print(wsdr.readWindGust());
-        Serial.println("m/s");
-    }
- 
-    if (wsdr.dataHas(newDataState, NDRainVolume)) {
-        Serial.print("Rain volume: ");
-        Serial.print(wsdr.readRainVolume());
-        Serial.println("mm");
+        if (wsdr.dataHas(newDataState, NDRainVolume)) {
+            Serial.print("Rain volume: ");
+            Serial.print(wsdr.readRainVolume());
+            Serial.println("mm");
+        }
+
+        Serial.println("------------");
     }
 }
