@@ -4,6 +4,7 @@
 
 byte dataPin;
 uint64_t rxBuffer;                       // Variable zum speichern des Datentelegramms (64 Bit)
+Ringbuffer<uint64_t, 5> *dataBufferNotConfirmed = NULL;     // Ringbuffer für nicht bestätigte Daten (10 x 64Bit)
 Ringbuffer<uint64_t, 20> dataBuffer;     // Ringbuffer für zuletzt empfangene Daten (20 x 64Bit)
 
 // Helper for ISR call
@@ -12,7 +13,7 @@ WeatherStationDataRx *WeatherStationDataRx::__instance[4] = {0};
 #if defined(ESP32)
 IRAM_ATTR void WeatherStationDataRx::_ISR()
 #elif defined(ESP8266)
-ICACHE_RAM_ATTR void WeatherStationDataRx::_ISR()
+IRAM_ATTR void WeatherStationDataRx::_ISR()
 #else
 void WeatherStationDataRx::_ISR()
 #endif
@@ -32,8 +33,6 @@ ICACHE_RAM_ATTR void WeatherStationDataRx::rx433Handler()
 void WeatherStationDataRx::rx433Handler()
 #endif
 { // Interrupt-Routine
-    lastDataTime = millis();
-
     static unsigned long rxHigh = 0, rxLow = 0;
     static bool syncBit = 0, dataBit = 0;
     static byte rxCounter = 0;
@@ -66,14 +65,35 @@ void WeatherStationDataRx::rx433Handler()
             {                  // wenn das Datentelegramm (32 Bit) vollstaendig uebertragen wurde, dann...
                 rxCounter = 0; // den Counter zuruecksetzen
                 syncBit = 0;   // syncBit zuruecksetzen
-                if ((!this->ignoreRepeatedMessages) || (!dataBuffer.contains(&rxBuffer)))
+
+                if (((this->actionOnRepeatedMessage == ARMUseAsConfirmation) || (this->actionOnRepeatedMessage == ARMIgnore)) && 
+                    (millis() - lastDataTime > IGNORE_REPEATED_MESSAGES_TIME)) {
+                    dataBufferNotConfirmed->clear();
+                }
+
+
+                if (this->actionOnRepeatedMessage == ARMUseAsConfirmation) {
+                    if (dataBufferNotConfirmed->contains(&rxBuffer)) {
+                        dataBuffer.push(&rxBuffer);
+                    } else {
+                        dataBufferNotConfirmed->push(&rxBuffer);
+                    }             
+                } else if (this->actionOnRepeatedMessage == ARMIgnore) {
+                    if (!dataBufferNotConfirmed->contains(&rxBuffer)) {
+                        dataBufferNotConfirmed->push(&rxBuffer);
+                        dataBuffer.push(&rxBuffer);
+                    }
+                } else if (this->actionOnRepeatedMessage == ARMPass) {
                     dataBuffer.push(&rxBuffer);   // Empfangene Daten aus (rxBuffer) fuer die Auswertung in Ringbuffer speichern
+                }
+
+                lastDataTime = millis();
             }
         }
     }
 }
 
-WeatherStationDataRx::WeatherStationDataRx(uint8_t dataPin, bool pairingRequired, bool ignoreRepeatedMessages, bool keepNewDataState)
+WeatherStationDataRx::WeatherStationDataRx(uint8_t dataPin, bool pairingRequired, ActionOnRepeatedMessage actionOnRepeatedMessage, bool keepNewDataState)
 {
     for (byte i = 0; i < 4; i++)
         if (__instance[i] == 0)
@@ -85,17 +105,29 @@ WeatherStationDataRx::WeatherStationDataRx(uint8_t dataPin, bool pairingRequired
 
     this->dataPin = dataPin;
     this->pairingRequired = pairingRequired;
-    this->ignoreRepeatedMessages = ignoreRepeatedMessages; 
+    this->actionOnRepeatedMessage = actionOnRepeatedMessage; 
     this->keepNewDataState = keepNewDataState;
+
+    if ((dataBufferNotConfirmed == NULL) && ((this->actionOnRepeatedMessage == ARMUseAsConfirmation) || (this->actionOnRepeatedMessage == ARMIgnore))) {
+        dataBufferNotConfirmed = new Ringbuffer<uint64_t, 5>();
+    }
 }
 
 WeatherStationDataRx::~WeatherStationDataRx()
 {
-    for (byte i = 0; i < 4; i++)
+    bool canClean = true;
+    for (byte i = 0; i < 4; i++) {
         if (__instance[i] == this)
         {
             __instance[i] = 0;
+        } else {
+            canClean = false;
         }
+    }
+
+    if ((canClean) && (dataBufferNotConfirmed != NULL)) {
+        delete dataBufferNotConfirmed;
+    }
 }
 
 void WeatherStationDataRx::begin()
@@ -136,10 +168,7 @@ void WeatherStationDataRx::pair(byte pairedDevices[], byte pairedDevicesCount, v
 }
 
 byte WeatherStationDataRx::readData(bool newFormat)
-{
-    if ((this->ignoreRepeatedMessages) && (millis() - lastDataTime < IGNORE_REPEATED_MESSAGES_TIME))
-        return 0;
-    
+{    
     if ((pairingEndMillis != 0) && (millis() > pairingEndMillis))
     {
         pairingEndMillis = 0;

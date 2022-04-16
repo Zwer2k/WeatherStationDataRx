@@ -33,7 +33,7 @@
 #define DATA_PIN 2
 #endif
 
-WeatherStationDataRx wsdr(DATA_PIN, true, false, false);
+WeatherStationDataRx wsdr(DATA_PIN, true, ARMUseAsConfirmation, false);
 
 void PairedDeviceAdded(byte newID)
 {
