@@ -48,10 +48,16 @@ enum NewDataType {
     NDError         = B10000000,
 };
 
+enum ActionOnRepeatedMessage {
+    ARMUseAsConfirmation,  // Duplicate packages are used as confirmation package (safe method)
+    ARMIgnore,             // Duplicate packets are ignored 
+    ARMPass                // Duplicate packages are passed on  
+};
+
 class WeatherStationDataRx
 {
 public:
-    WeatherStationDataRx(uint8_t dataPin, bool pairingRequired = false, bool ignoreRepeatedMessages = false, bool keepNewDataState = false);
+    WeatherStationDataRx(uint8_t dataPin, bool pairingRequired = false, ActionOnRepeatedMessage actionOnRepeatedMessage = ARMUseAsConfirmation, bool keepNewDataState = false);
     ~WeatherStationDataRx();
 
     void begin();
@@ -101,7 +107,7 @@ private:
     uint16_t humidity, windSpeed, windDirection, windGust, rainVolume; // Variablen zum speichern der Daten
     byte batteryState = 0;                                                          // der Batterie-Status von beiden Sensoren (Bit 0 = Windsensor und Bit 1 = Regensensor)
     byte randomID = 0;                                                              // At power up (when the batteries are inserted) the sensor selects a random number.
-    bool ignoreRepeatedMessages;
+    ActionOnRepeatedMessage actionOnRepeatedMessage;
     bool keepNewDataState;
     unsigned long lastDataTime = 0;
 

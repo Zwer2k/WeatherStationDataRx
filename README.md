@@ -16,6 +16,11 @@ Tested on Arduino Duemilanove, ESP8266 (Tested on Wemos D1 Mini) and ESP32 (ESP-
 ![Connecting RXB6](doc/W132_board.jpg)
 
 
+## Changelog
+
+### v0.5.0
+- Packet confirmation by duplicates of packets. As a result, there should no longer be any erroneous readings.
+
 ## License
 
 The MIT License (MIT)

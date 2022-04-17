@@ -33,7 +33,7 @@
 #define DATA_PIN 2
 #endif
 
-WeatherStationDataRx wsdr(DATA_PIN, true, true, false);
+WeatherStationDataRx wsdr(DATA_PIN, false, ARMUseAsConfirmation, false);
 
 void PairedDeviceAdded(byte newID)
 {
@@ -65,9 +65,9 @@ void loop()
 {
     byte newDataState = wsdr.readData(true);
     if (newDataState > 0) {
+        Serial.print("ensorID ");
         Serial.println(wsdr.sensorID());
-    
-
+        
         if (wsdr.dataHas(newDataState, NDTemperature)) {
             Serial.print("Battery: ");
             Serial.println(bitRead(wsdr.batteryStatus(), 0) == 0 ? "OK" : "Low");
@@ -107,6 +107,10 @@ void loop()
             Serial.print("Rain volume: ");
             Serial.print(wsdr.readRainVolume());
             Serial.println("mm");
+        }
+
+        if (wsdr.dataHas(newDataState, NDError)) {
+            Serial.println("Error: pairing required");
         }
 
         Serial.println("------------");
