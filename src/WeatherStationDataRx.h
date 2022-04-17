@@ -49,7 +49,7 @@ enum NewDataType {
 };
 
 enum ActionOnRepeatedMessage {
-    ARMUseAsConfirmation,  // Duplicate packages are used as confirmation package   
+    ARMUseAsConfirmation,  // Duplicate packages are used as confirmation package (safe method)
     ARMIgnore,             // Duplicate packets are ignored 
     ARMPass                // Duplicate packages are passed on  
 };
