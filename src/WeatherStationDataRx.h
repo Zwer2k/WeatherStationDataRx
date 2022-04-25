@@ -49,15 +49,16 @@ enum NewDataType {
 };
 
 enum ActionOnRepeatedMessage {
-    ARMUseAsConfirmation,  // Duplicate packages are used as confirmation package (safe method)
-    ARMIgnore,             // Duplicate packets are ignored 
-    ARMPass                // Duplicate packages are passed on  
+    ARMUseAsConfirmation2x,  // Duplicate packages are used as confirmation package. 2 confirmation packages are expected. (safe method)
+    ARMUseAsConfirmation,    // Duplicate packages are used as confirmation package
+    ARMIgnore,               // Duplicate packets are ignored 
+    ARMPass                  // Duplicate packages are passed on  
 };
 
 class WeatherStationDataRx
 {
 public:
-    WeatherStationDataRx(uint8_t dataPin, bool pairingRequired = false, ActionOnRepeatedMessage actionOnRepeatedMessage = ARMUseAsConfirmation, bool keepNewDataState = false);
+    WeatherStationDataRx(uint8_t dataPin, bool pairingRequired = false, ActionOnRepeatedMessage actionOnRepeatedMessage = ARMUseAsConfirmation2x, bool keepNewDataState = false);
     ~WeatherStationDataRx();
 
     void begin();

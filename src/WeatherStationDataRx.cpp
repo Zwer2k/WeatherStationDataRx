@@ -72,13 +72,19 @@ void WeatherStationDataRx::rx433Handler()
                 }
 
 
-                if (this->actionOnRepeatedMessage == ARMUseAsConfirmation) {
+                if (this->actionOnRepeatedMessage == ARMUseAsConfirmation2x) {
+                    if (dataBufferNotConfirmed->counterEqual(&rxBuffer) >= 2) {
+                        dataBuffer.push(&rxBuffer);
+                    } else {
+                        dataBufferNotConfirmed->push(&rxBuffer);
+                    }             
+                } else if (this->actionOnRepeatedMessage == ARMUseAsConfirmation) {
                     if (dataBufferNotConfirmed->contains(&rxBuffer)) {
                         dataBuffer.push(&rxBuffer);
                     } else {
                         dataBufferNotConfirmed->push(&rxBuffer);
                     }             
-                } else if (this->actionOnRepeatedMessage == ARMIgnore) {
+                }else if (this->actionOnRepeatedMessage == ARMIgnore) {
                     if (!dataBufferNotConfirmed->contains(&rxBuffer)) {
                         dataBufferNotConfirmed->push(&rxBuffer);
                         dataBuffer.push(&rxBuffer);
