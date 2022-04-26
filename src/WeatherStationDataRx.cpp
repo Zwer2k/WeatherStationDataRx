@@ -66,7 +66,8 @@ void WeatherStationDataRx::rx433Handler()
                 rxCounter = 0; // den Counter zuruecksetzen
                 syncBit = 0;   // syncBit zuruecksetzen
 
-                if (((this->actionOnRepeatedMessage == ARMUseAsConfirmation) || (this->actionOnRepeatedMessage == ARMIgnore)) && 
+                if (((this->actionOnRepeatedMessage == ARMUseAsConfirmation2x) || (this->actionOnRepeatedMessage == ARMUseAsConfirmation) || 
+                     (this->actionOnRepeatedMessage == ARMIgnore)) && 
                     (millis() - lastDataTime > IGNORE_REPEATED_MESSAGES_TIME)) {
                     dataBufferNotConfirmed->clear();
                 }
@@ -84,7 +85,7 @@ void WeatherStationDataRx::rx433Handler()
                     } else {
                         dataBufferNotConfirmed->push(&rxBuffer);
                     }             
-                }else if (this->actionOnRepeatedMessage == ARMIgnore) {
+                } else if (this->actionOnRepeatedMessage == ARMIgnore) {
                     if (!dataBufferNotConfirmed->contains(&rxBuffer)) {
                         dataBufferNotConfirmed->push(&rxBuffer);
                         dataBuffer.push(&rxBuffer);
@@ -114,7 +115,8 @@ WeatherStationDataRx::WeatherStationDataRx(uint8_t dataPin, bool pairingRequired
     this->actionOnRepeatedMessage = actionOnRepeatedMessage; 
     this->keepNewDataState = keepNewDataState;
 
-    if ((dataBufferNotConfirmed == NULL) && ((this->actionOnRepeatedMessage == ARMUseAsConfirmation) || (this->actionOnRepeatedMessage == ARMIgnore))) {
+    if ((dataBufferNotConfirmed == NULL) && 
+        ((this->actionOnRepeatedMessage == ARMUseAsConfirmation2x) || (this->actionOnRepeatedMessage == ARMUseAsConfirmation) || (this->actionOnRepeatedMessage == ARMIgnore))) {
         dataBufferNotConfirmed = new Ringbuffer<uint64_t, 5>();
     }
 }
@@ -133,6 +135,7 @@ WeatherStationDataRx::~WeatherStationDataRx()
 
     if ((canClean) && (dataBufferNotConfirmed != NULL)) {
         delete dataBufferNotConfirmed;
+        dataBufferNotConfirmed = NULL;
     }
 }
 

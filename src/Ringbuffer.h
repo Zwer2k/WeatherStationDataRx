@@ -14,7 +14,7 @@ public:
     bool push(const BUFFTYPE * const value) __attribute__ ((noinline));
     bool pull(BUFFTYPE &value) __attribute__ ((noinline));
     bool contains(const BUFFTYPE * const value) __attribute__ ((noinline));
-    byte counterEqual(const BUFFTYPE * const value);
+    uint16_t counterEqual(const BUFFTYPE * const value);
     void clear()   { size = 0; }
     uint16_t currentSize() { return size; }
     uint16_t freeSize()  { return BUFFSIZE - size; }
@@ -74,12 +74,12 @@ bool Ringbuffer<BUFFTYPE, BUFFSIZE>::contains(const BUFFTYPE * const value)
 }
 
 template <typename BUFFTYPE, uint16_t BUFFSIZE>
-byte Ringbuffer<BUFFTYPE, BUFFSIZE>::counterEqual(const BUFFTYPE * const value)
+uint16_t Ringbuffer<BUFFTYPE, BUFFSIZE>::counterEqual(const BUFFTYPE * const value)
 {
     if (size == 0) 
         return false;
 
-    byte count = 0;
+    uint16_t count = 0;
     for (uint16_t i = 0, j = readPos; i < size; i++) {
       if (j == BUFFSIZE) 
         j = 0;
