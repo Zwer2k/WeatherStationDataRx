@@ -7,7 +7,7 @@ template <typename BUFFTYPE, uint16_t BUFFSIZE>
 class Ringbuffer {
 private:
     BUFFTYPE buffer[BUFFSIZE];
-    uint16_t readPos, size;
+    volatile uint16_t readPos, size;
 
 public:
     Ringbuffer();
