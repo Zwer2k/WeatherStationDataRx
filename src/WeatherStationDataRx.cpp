@@ -62,7 +62,13 @@ void WeatherStationDataRx::rx433Handler()
                 rxBuffer |= (unsigned long long)dataBit << rxCounter++; // das Datenbit in den Puffer schieben und den Counter erhoehen
             }
             if (rxCounter == 36)
-            {                  // wenn das Datentelegramm (32 Bit) vollstaendig uebertragen wurde, dann...
+            {  // wenn das Datentelegramm (32 Bit) vollstaendig uebertragen wurde, dann...
+                bufferWriteLock = true;
+                if (bufferReadLock) {
+                    bufferWriteLock = false;
+                    return;
+                }
+
                 rxCounter = 0; // den Counter zuruecksetzen
                 syncBit = 0;   // syncBit zuruecksetzen
 
@@ -95,6 +101,7 @@ void WeatherStationDataRx::rx433Handler()
                 }
 
                 lastDataTime = millis();
+                bufferWriteLock = false;
             }
         }
     }
@@ -202,9 +209,13 @@ byte WeatherStationDataRx::readData(bool newFormat)
     if (dataBuffer.currentSize() > 0)
     {   
         unsigned long long rxData;
-        noInterrupts();
+        //noInterrupts();
+        bufferReadLock = true;
+        while (bufferWriteLock)
+            delay(10);
         dataBuffer.pull(rxData);
-        interrupts();
+        bufferReadLock = false;
+        //interrupts();
 
                                        // wenn die Interrupt-Routine rxOk auf true gesetzt hat, dann ist der Puffer mit den Daten gefuellt
         randomID = (unsigned long)rxData & 0xff;     // die ersten 8 Bits enthalten eine Zufalls-ID (wird beim Batteriewechsel neu generiert)

@@ -111,6 +111,8 @@ private:
     ActionOnRepeatedMessage actionOnRepeatedMessage;
     bool keepNewDataState;
     unsigned long lastDataTime = 0;
+    volatile bool bufferReadLock = false;
+    volatile bool bufferWriteLock = false;
 
     bool calculateChecksume(unsigned long long data, byte startValue, bool add);
     bool isPaired(byte randomID);
