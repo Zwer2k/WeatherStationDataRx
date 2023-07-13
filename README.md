@@ -15,6 +15,9 @@ Tested on Arduino Duemilanove, ESP8266 (Tested on Wemos D1 Mini) and ESP32 (ESP-
 
 ![Connecting RXB6](doc/W132_board.jpg)
 
+## ESPHome 
+[Example of configuration](examples/esphome/README.md)
+
 
 ## Changelog
 
