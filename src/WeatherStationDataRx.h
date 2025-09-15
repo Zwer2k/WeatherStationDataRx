@@ -38,14 +38,14 @@
 #endif
 
 enum NewDataType {
-    NDBattState     = B00000001,
-    NDTemperature   = B00000010,
-    NDHumidity      = B00000100,
-    NDWindSpeed     = B00001000,
-    NDWindDirection = B00010000,
-    NDWindGust      = B00100000,
-    NDRainVolume    = B01000000,
-    NDError         = B10000000,
+    NDBattState     = 0b00000001,
+    NDTemperature   = 0b00000010,
+    NDHumidity      = 0b00000100,
+    NDWindSpeed     = 0b00001000,
+    NDWindDirection = 0b00010000,
+    NDWindGust      = 0b00100000,
+    NDRainVolume    = 0b01000000,
+    NDError         = 0b10000000,
 };
 
 enum ActionOnRepeatedMessage {

@@ -18,6 +18,9 @@ Tested on Arduino Duemilanove, ESP8266 (Tested on Wemos D1 Mini) and ESP32 (ESP-
 
 ## Changelog
 
+### v0.5.1
+- Compiler warnings eliminated
+
 ### v0.5.0
 - Packet confirmation by duplicates of packets. As a result, there should no longer be any erroneous readings.
 

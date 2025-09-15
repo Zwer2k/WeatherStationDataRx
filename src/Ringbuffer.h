@@ -40,7 +40,7 @@ bool Ringbuffer<BUFFTYPE, BUFFSIZE>::push(const BUFFTYPE * const value)
     if (writePos >= BUFFSIZE) 
         writePos -= BUFFSIZE;
     buffer[writePos] = *value;
-    size++;
+  size = size + 1;
     return true;
 }
 
@@ -50,8 +50,8 @@ bool Ringbuffer<BUFFTYPE, BUFFSIZE>::pull(BUFFTYPE &value)
   if (size == 0) 
     return false;
   value = buffer[readPos];
-  readPos++;
-  size--;
+  readPos = readPos + 1;
+  size = size - 1;
   if (readPos == BUFFSIZE) 
     readPos = 0;
   return true;
