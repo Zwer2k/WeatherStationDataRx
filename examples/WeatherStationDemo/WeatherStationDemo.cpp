@@ -68,7 +68,7 @@ void loop()
         Serial.print("ensorID ");
         Serial.println(wsdr.sensorID());
         
-        if (wsdr.dataHas(newDataState, NDTemperature)) {
+        if (wsdr.dataHas(newDataState, NDBattState)) {
             Serial.print("Battery: ");
             Serial.println(bitRead(wsdr.batteryStatus(), 0) == 0 ? "OK" : "Low");
         }
