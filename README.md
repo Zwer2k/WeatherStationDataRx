@@ -21,6 +21,9 @@ Tested on Arduino Duemilanove, ESP8266 (Tested on Wemos D1 Mini) and ESP32 (ESP-
 
 ## Changelog
 
+### v0.5.2
+- Improve example
+  
 ### v0.5.1
 - Compiler warnings eliminated
 
