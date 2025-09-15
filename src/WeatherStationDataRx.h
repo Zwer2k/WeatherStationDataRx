@@ -38,26 +38,27 @@
 #endif
 
 enum NewDataType {
-    NDBattState     = B00000001,
-    NDTemperature   = B00000010,
-    NDHumidity      = B00000100,
-    NDWindSpeed     = B00001000,
-    NDWindDirection = B00010000,
-    NDWindGust      = B00100000,
-    NDRainVolume    = B01000000,
-    NDError         = B10000000,
+    NDBattState     = 0b00000001,
+    NDTemperature   = 0b00000010,
+    NDHumidity      = 0b00000100,
+    NDWindSpeed     = 0b00001000,
+    NDWindDirection = 0b00010000,
+    NDWindGust      = 0b00100000,
+    NDRainVolume    = 0b01000000,
+    NDError         = 0b10000000,
 };
 
 enum ActionOnRepeatedMessage {
-    ARMUseAsConfirmation,  // Duplicate packages are used as confirmation package (safe method)
-    ARMIgnore,             // Duplicate packets are ignored 
-    ARMPass                // Duplicate packages are passed on  
+    ARMUseAsConfirmation2x,  // Duplicate packages are used as confirmation package. 2 confirmation packages are expected. (safe method)
+    ARMUseAsConfirmation,    // Duplicate packages are used as confirmation package
+    ARMIgnore,               // Duplicate packets are ignored 
+    ARMPass                  // Duplicate packages are passed on  
 };
 
 class WeatherStationDataRx
 {
 public:
-    WeatherStationDataRx(uint8_t dataPin, bool pairingRequired = false, ActionOnRepeatedMessage actionOnRepeatedMessage = ARMUseAsConfirmation, bool keepNewDataState = false);
+    WeatherStationDataRx(uint8_t dataPin, bool pairingRequired = false, ActionOnRepeatedMessage actionOnRepeatedMessage = ARMUseAsConfirmation2x, bool keepNewDataState = false);
     ~WeatherStationDataRx();
 
     void begin();
@@ -110,6 +111,8 @@ private:
     ActionOnRepeatedMessage actionOnRepeatedMessage;
     bool keepNewDataState;
     unsigned long lastDataTime = 0;
+    volatile bool bufferReadLock = false;
+    volatile bool bufferWriteLock = false;
 
     bool calculateChecksume(unsigned long long data, byte startValue, bool add);
     bool isPaired(byte randomID);

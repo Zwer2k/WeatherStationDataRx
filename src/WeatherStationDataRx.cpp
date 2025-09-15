@@ -62,17 +62,30 @@ void WeatherStationDataRx::rx433Handler()
                 rxBuffer |= (unsigned long long)dataBit << rxCounter++; // das Datenbit in den Puffer schieben und den Counter erhoehen
             }
             if (rxCounter == 36)
-            {                  // wenn das Datentelegramm (32 Bit) vollstaendig uebertragen wurde, dann...
+            {  // wenn das Datentelegramm (32 Bit) vollstaendig uebertragen wurde, dann...
+                bufferWriteLock = true;
+                if (bufferReadLock) {
+                    bufferWriteLock = false;
+                    return;
+                }
+
                 rxCounter = 0; // den Counter zuruecksetzen
                 syncBit = 0;   // syncBit zuruecksetzen
 
-                if (((this->actionOnRepeatedMessage == ARMUseAsConfirmation) || (this->actionOnRepeatedMessage == ARMIgnore)) && 
+                if (((this->actionOnRepeatedMessage == ARMUseAsConfirmation2x) || (this->actionOnRepeatedMessage == ARMUseAsConfirmation) || 
+                     (this->actionOnRepeatedMessage == ARMIgnore)) && 
                     (millis() - lastDataTime > IGNORE_REPEATED_MESSAGES_TIME)) {
                     dataBufferNotConfirmed->clear();
                 }
 
 
-                if (this->actionOnRepeatedMessage == ARMUseAsConfirmation) {
+                if (this->actionOnRepeatedMessage == ARMUseAsConfirmation2x) {
+                    if (dataBufferNotConfirmed->counterEqual(&rxBuffer) >= 2) {
+                        dataBuffer.push(&rxBuffer);
+                    } else {
+                        dataBufferNotConfirmed->push(&rxBuffer);
+                    }             
+                } else if (this->actionOnRepeatedMessage == ARMUseAsConfirmation) {
                     if (dataBufferNotConfirmed->contains(&rxBuffer)) {
                         dataBuffer.push(&rxBuffer);
                     } else {
@@ -88,6 +101,7 @@ void WeatherStationDataRx::rx433Handler()
                 }
 
                 lastDataTime = millis();
+                bufferWriteLock = false;
             }
         }
     }
@@ -108,7 +122,8 @@ WeatherStationDataRx::WeatherStationDataRx(uint8_t dataPin, bool pairingRequired
     this->actionOnRepeatedMessage = actionOnRepeatedMessage; 
     this->keepNewDataState = keepNewDataState;
 
-    if ((dataBufferNotConfirmed == NULL) && ((this->actionOnRepeatedMessage == ARMUseAsConfirmation) || (this->actionOnRepeatedMessage == ARMIgnore))) {
+    if ((dataBufferNotConfirmed == NULL) && 
+        ((this->actionOnRepeatedMessage == ARMUseAsConfirmation2x) || (this->actionOnRepeatedMessage == ARMUseAsConfirmation) || (this->actionOnRepeatedMessage == ARMIgnore))) {
         dataBufferNotConfirmed = new Ringbuffer<uint64_t, 5>();
     }
 }
@@ -127,6 +142,7 @@ WeatherStationDataRx::~WeatherStationDataRx()
 
     if ((canClean) && (dataBufferNotConfirmed != NULL)) {
         delete dataBufferNotConfirmed;
+        dataBufferNotConfirmed = NULL;
     }
 }
 
@@ -193,9 +209,13 @@ byte WeatherStationDataRx::readData(bool newFormat)
     if (dataBuffer.currentSize() > 0)
     {   
         unsigned long long rxData;
-        noInterrupts();
+        //noInterrupts();
+        bufferReadLock = true;
+        while (bufferWriteLock)
+            delay(10);
         dataBuffer.pull(rxData);
-        interrupts();
+        bufferReadLock = false;
+        //interrupts();
 
                                        // wenn die Interrupt-Routine rxOk auf true gesetzt hat, dann ist der Puffer mit den Daten gefuellt
         randomID = (unsigned long)rxData & 0xff;     // die ersten 8 Bits enthalten eine Zufalls-ID (wird beim Batteriewechsel neu generiert)
